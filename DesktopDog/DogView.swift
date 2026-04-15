@@ -6,22 +6,47 @@
 //
 
 import SwiftUI
+import Combine
 
 struct DogView: View {
 
-    @State var frame = 0
+    @ObservedObject var dogState: DogStateModel
+    @State private var frame = 0
 
-    let frames = ["dog1", "dog2", "dog3", "dog4", "dog_idle", "dog_sleep"]
+    private let walkingFrames = ["dog1", "dog2", "dog3", "dog4"]
+    private let animationTimer = Timer.publish(every: 0.18, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        Image(frames[frame])
+        Image(currentImageName)
             .resizable()
             .frame(width: 120, height: 120)
-            .onAppear {
-
-                Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { _ in
-                    frame = (frame + 1) % frames.count
+            .scaleEffect(x: dogState.isFacingLeft ? -1 : 1, y: 1)
+            .onReceive(animationTimer) { _ in
+                if isWalking {
+                    frame = (frame + 1) % walkingFrames.count
+                } else {
+                    frame = 0
                 }
             }
+    }
+
+    private var currentImageName: String {
+        switch dogState.activity {
+        case .walkingLeft, .walkingRight:
+            return walkingFrames[frame]
+        case .idle:
+            return "dog_idle"
+        case .sleeping:
+            return "dog_sleep"
+        }
+    }
+
+    private var isWalking: Bool {
+        switch dogState.activity {
+        case .walkingLeft, .walkingRight:
+            return true
+        case .idle, .sleeping:
+            return false
+        }
     }
 }

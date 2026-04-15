@@ -10,8 +10,6 @@ import Cocoa
 class DogWindow: NSWindow {
 
     init() {
-        let screen = NSScreen.main!.frame
-
         super.init(
             contentRect: NSRect(x: 100, y: 100, width: 120, height: 120),
             styleMask: [.borderless],

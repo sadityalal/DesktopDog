@@ -10,14 +10,21 @@ import SwiftUI
 @main
 struct DesktopDogApp: App {
 
-    var window: DogWindow!
+    let window: DogWindow
+    let dogState: DogStateModel
+    let dogController: DogController
 
     init() {
-        window = DogWindow()
-        window.contentView = NSHostingView(rootView: DogView())
+        let dogState = DogStateModel()
+        let window = DogWindow()
+        let dogController = DogController(window: window, dogState: dogState)
+
+        window.contentView = NSHostingView(rootView: DogView(dogState: dogState))
         window.makeKeyAndOrderFront(nil)
 
-        _ = DogController(window: window)
+        self.window = window
+        self.dogState = dogState
+        self.dogController = dogController
     }
 
     var body: some Scene {
